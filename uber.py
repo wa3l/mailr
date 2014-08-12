@@ -3,6 +3,7 @@ from flask import Flask, request
 from mailgun  import Mailgun
 from mandrill import Mandrill
 import html2text as convert
+from validation import Validator
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -12,22 +13,24 @@ def index():
   return "this is a test index page"
 
 
-@app.route('/email', methods=['GET', 'POST'])
+@app.route('/email', methods=['POST'])
 def email():
-  # test email service:
-  html = "<h1>Your Bill</h1><p>$10</p>"
-  email = {
-    "to": "walsallami@gmail.com",
-    "to_name": "Wael Al-Sallami",
-    "from": "wael.alsallami@gmail.com",
-    "from_name": "Katie Lea",
-    "subject": "A Message from Uber",
-    "text": convert.html2text(html),
-    "html": html
+  # build email dict:
+  email_object = {
+    "to":        request.form['to'],
+    "to_name":   request.form['to_name'],
+    "from":      request.form['from'],
+    "from_name": request.form['from_name'],
+    "subject":   request.form['subject'],
+    "text":      convert.html2text(request.form['body']),
+    "html":      request.form['body']
   }
+  validator = Validator()
+  result = validator.validate(email_object)
+  if result != True: return str(result)
   m = Mailgun()
   # m = Mandrill()
-  response = m.send(email)
+  response = m.send(email_object)
   return response
 
 
