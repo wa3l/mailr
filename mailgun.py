@@ -23,11 +23,7 @@ class Mailgun():
     This is ugly code due to urllib's low levelness.
     """
     password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
-    password_manager.add_password(None,
-                                  APIKeys.MAILGUN_URL,
-                                  'api',
-                                  APIKeys.MAILGUN_KEY
-                                  )
+    password_manager.add_password(None, self.url, 'api', self.key)
     # build a basic HTTP auth handler
     # build an opener with it and finally install it:
     auth   = urllib2.HTTPBasicAuthHandler(password_manager)
@@ -47,6 +43,6 @@ class Mailgun():
               "text": email['text'],
               "html": email['html']
             }
-    request = urllib2.Request(APIKeys.MAILGUN_URL, urllib.urlencode(data))
+    request = urllib2.Request(self.url, urllib.urlencode(data))
     handler = urllib2.urlopen(request)
     return handler.read()

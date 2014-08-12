@@ -1,7 +1,8 @@
 import os
 from flask import Flask
 from flask import request
-from mailgun import Mailgun
+from mailgun  import Mailgun
+from mandrill import Mandrill
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -23,7 +24,8 @@ def email():
     "text": "Your Bill: $10",
     "html": "<h1>Your Bill</h1><p>$10</p>"
   }
-  m = Mailgun()
+  # m = Mailgun()
+  m = Mandrill()
   response = m.send(email)
   return response
 
