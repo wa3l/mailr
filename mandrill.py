@@ -45,5 +45,8 @@ class Mandrill():
     except HTTPError as e:
       return (e.reason, e.code)
 
-    response = {'status': 'success', 'message':"Email queued to be sent by Mandrill."}
+    response = {
+                'status':  'success',
+                'message': 'Email queued to be sent by Mandrill.'
+                }
     return (response, handler.getcode())

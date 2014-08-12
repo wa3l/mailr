@@ -22,33 +22,29 @@ def process_body(email):
   email['text'] = convert.html2text(email['body'])
   email.pop('body')
 
-@app.route('/')
-def index():
-  return "this is a test index page"
-
-
 @app.route('/email', methods=['POST'])
 def email():
   # build email dict:
-
-
   email = {}
   for k, v in request.form.items():
     email[k] = v.strip()
 
   result = Validator().validate(email)
   if result != True:
-    return str(result)
+    return json.dumps(result)
 
   process_body(email)
 
   service    = email_service()
   resp, code = service.send(email)
-  if code == 200:
-    return str(resp)
-  else:
-    app.logger.error('Error {0} - Mailgun responded with: {1}'.format(code, resp))
-    return {'status': 'error', 'message': "An error has occurred on the email service provider's end."}
+  if code != 200:
+    app.logger.error('Error {0} - {1} responded with: {2}'.format(code, app.config['default_service'], resp))
+    return json.dumps({
+                      'status':  'error',
+                      'message': 'An error has occurred on the email service provider\'s end.'
+                      })
+
+  return json.dumps(resp)
 
 
 if __name__ == '__main__':

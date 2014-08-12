@@ -54,5 +54,7 @@ class Mailgun():
     except HTTPError as e:
       return (e.reason, e.code)
 
-    response = {'status': 'success', 'message':"Email queued to be sent by Mailgun."}
+    response = {
+                'status':  'success',
+                'message': 'Email queued to be sent by Mailgun.'}
     return (response, handler.getcode())
