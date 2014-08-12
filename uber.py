@@ -2,6 +2,7 @@ import os
 from flask import Flask, request
 from mailgun  import Mailgun
 from mandrill import Mandrill
+import html2text as convert
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -14,14 +15,15 @@ def index():
 @app.route('/email', methods=['GET', 'POST'])
 def email():
   # test email service:
+  html = "<h1>Your Bill</h1><p>$10</p>"
   email = {
     "to": "walsallami@gmail.com",
     "to_name": "Wael Al-Sallami",
     "from": "wael.alsallami@gmail.com",
     "from_name": "Katie Lea",
     "subject": "A Message from Uber",
-    "text": "Your Bill: $10",
-    "html": "<h1>Your Bill</h1><p>$10</p>"
+    "text": convert.html2text(html),
+    "html": html
   }
   m = Mailgun()
   # m = Mandrill()
