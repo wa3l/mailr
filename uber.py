@@ -1,9 +1,9 @@
-import os
-from flask import Flask, request
-from mailgun  import Mailgun
-from mandrill import Mandrill
+import os, json
 import html2text as convert
-from validation import Validator
+from   flask      import Flask, request
+from   mailgun    import Mailgun
+from   mandrill   import Mandrill
+from   validation import Validator
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -16,21 +16,22 @@ def index():
 @app.route('/email', methods=['POST'])
 def email():
   # build email dict:
-  email_object = {
-    "to":        request.form['to'],
-    "to_name":   request.form['to_name'],
-    "from":      request.form['from'],
-    "from_name": request.form['from_name'],
-    "subject":   request.form['subject'],
-    "text":      convert.html2text(request.form['body']),
-    "html":      request.form['body']
-  }
   validator = Validator()
-  result = validator.validate(email_object)
-  if result != True: return str(result)
-  m = Mailgun()
-  # m = Mandrill()
-  response = m.send(email_object)
+
+  email = {}
+  for k, v in request.form.items():
+    email[k] = v.strip()
+
+  result = validator.validate(email)
+  if not result == True: return str(result)
+
+  email['html'] = email['body']
+  email['text'] = convert.html2text(email['body'])
+  # email.pop('body')
+
+  m       = Mailgun()
+  # m       = Mandrill()
+  response  = m.send(email)
   return response
 
 

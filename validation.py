@@ -16,8 +16,7 @@ class Validator():
         Required('to_name'):   All(unicode, Length(min=1)),
         Required('from_name'): All(unicode, Length(min=1)),
         Required('subject'):   All(unicode, Length(min=1, max=78)),
-        Required('text'):      All(unicode, Length(min=1)),
-        Required('html'):      All(unicode, Length(min=1))
+        Required('body'):      All(unicode, Length(min=1))
     })
 
 
