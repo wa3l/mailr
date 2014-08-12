@@ -1,5 +1,7 @@
 from api_keys import APIKeys
-import urllib2, urllib
+import urllib2, urllib, json, logging
+from urllib2 import HTTPError
+from logging.handlers import RotatingFileHandler
 
 class Mailgun():
   """
@@ -32,6 +34,7 @@ class Mailgun():
     urllib2.install_opener(opener)
 
 
+
   def send(self, email):
     """
     Send the email using the provided email dict.
@@ -39,12 +42,17 @@ class Mailgun():
     """
     self.authenticate()
     data =  {
-              "from": "{0} <{1}>".format(email['from_name'], email['from']),
-              "to":   "{0} <{1}>".format(email['to_name'],   email['to']),
-              "subject": email['subject'],
-              "text": email['text'],
-              "html": email['html']
+              "from":     "{0} <{1}>".format(email['from_name'], email['from']),
+              "to":       "{0} <{1}>".format(email['to_name'],   email['to']),
+              "subject":  email['subject'],
+              "text":     email['text'],
+              "html":     email['html']
             }
     request = urllib2.Request(self.url, urllib.urlencode(data))
-    handler = urllib2.urlopen(request)
-    return handler.read()
+    try:
+      handler = urllib2.urlopen(request)
+    except HTTPError as e:
+      return (e.reason, e.code)
+
+    response = {'status': 'success', 'message':"Email queued to be sent by Mailgun."}
+    return (response, handler.getcode())

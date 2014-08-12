@@ -11,13 +11,13 @@ class Validator():
     Define the validation schema
     """
     self.schema = Schema({
-        Required('to'):        All(self.validate_email, Length(min=6, max=254)),
-        Required('from'):      All(self.validate_email, Length(min=6, max=254)),
-        Required('to_name'):   All(unicode, Length(min=1)),
-        Required('from_name'): All(unicode, Length(min=1)),
-        Required('subject'):   All(unicode, Length(min=1, max=78)),
-        Required('body'):      All(unicode, Length(min=1))
-    })
+        'to':        All(self.validate_email, Length(min=6, max=254)),
+        'from':      All(self.validate_email, Length(min=6, max=254)),
+        'to_name':   All(unicode, Length(min=1)),
+        'from_name': All(unicode, Length(min=1)),
+        'subject':   All(unicode, Length(min=1, max=78)),
+        'body':      All(unicode, Length(min=1))
+    }, extra=True, required=True)
 
 
   def validate_email(self, email_address):
@@ -37,5 +37,5 @@ class Validator():
     try:
       self.schema(email)
     except MultipleInvalid as e:
-      return str(e)
+      return {'status': 'error', 'message': str(e)}
     return True
