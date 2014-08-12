@@ -1,6 +1,10 @@
 # ignore venv
 venv
 
+# ignore config file with api keys
+api_keys.py
+test.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
