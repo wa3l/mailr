@@ -10,13 +10,21 @@ class Mailgun():
   Automatically handles creating a request to the Mailgun service
   provided a email object that contains email data.
   """
+  key = APIKeys.MAILGUN_KEY
+  url = APIKeys.MAILGUN_URL
+  success = {
+    'status':  'success',
+    'message': 'Email queued to be sent by Mailgun.'
+  }
 
-  def __init__(self):
-    """
-    Initiate the object with the proper API keys.
-    """
-    self.key = APIKeys.MAILGUN_KEY
-    self.url = APIKeys.MAILGUN_URL
+  def __get_json_object(self, email):
+    return urllib.urlencode({
+      "from":     "{0} <{1}>".format(email['from_name'], email['from']),
+      "to":       "{0} <{1}>".format(email['to_name'],   email['to']),
+      "subject":  email['subject'],
+      "text":     email['text'],
+      "html":     email['html']
+    })
 
 
   def authenticate(self):
@@ -41,20 +49,11 @@ class Mailgun():
     First authenticate to Mailgun, then build the request object and send it
     """
     self.authenticate()
-    data =  {
-              "from":     "{0} <{1}>".format(email['from_name'], email['from']),
-              "to":       "{0} <{1}>".format(email['to_name'],   email['to']),
-              "subject":  email['subject'],
-              "text":     email['text'],
-              "html":     email['html']
-            }
-    request = urllib2.Request(self.url, urllib.urlencode(data))
+    data = self.__get_json_object(email)
+    request = urllib2.Request(self.url, data)
     try:
       handler = urllib2.urlopen(request)
     except HTTPError as e:
       return (e.reason, e.code)
 
-    response = {
-                'status':  'success',
-                'message': 'Email queued to be sent by Mailgun.'}
-    return (response, handler.getcode())
+    return (self.success, handler.getcode())

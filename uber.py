@@ -40,9 +40,9 @@ def email():
   if code != 200:
     app.logger.error('Error {0} - {1} responded with: {2}'.format(code, app.config['default_service'], resp))
     return json.dumps({
-                      'status':  'error',
-                      'message': 'An error has occurred on the email service provider\'s end.'
-                      })
+      'status':  'error',
+      'message': 'An error has occurred on the email service provider\'s end.'
+    })
 
   return json.dumps(resp)
 
