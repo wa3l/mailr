@@ -1,5 +1,5 @@
-import json, html2text as convert
-from flask import jsonify
+import html2text as convert
+from flask import jsonify, json
 
 """
 Helper functions used in the app.

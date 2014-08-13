@@ -1,4 +1,5 @@
-import urllib2, urllib, json, logging
+import urllib2, urllib, logging
+from flask    import json
 from urllib2  import HTTPError
 from api_keys import APIKeys
 

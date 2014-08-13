@@ -1,5 +1,6 @@
-import urllib2, urllib, json
+import urllib2, urllib
 from urllib2  import HTTPError
+from flask    import json
 from api_keys import APIKeys
 
 class Mandrill():

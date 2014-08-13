@@ -1,5 +1,5 @@
-import os, json, helpers, logging
-from flask import Flask, request, jsonify
+import os, helpers, logging
+from flask import Flask, request, jsonify, json
 from validation import Validator
 from logging.handlers import RotatingFileHandler
 
