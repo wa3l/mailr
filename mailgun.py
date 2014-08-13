@@ -19,11 +19,11 @@ class Mailgun():
 
   def __get_json_object(self, data):
     return urllib.urlencode({
-      "from":     "{0} <{1}>".format(data['from_name'], data['from']),
-      "to":       "{0} <{1}>".format(data['to_name'],   data['to']),
-      "subject":  data['subject'],
-      "text":     data['text'],
-      "html":     data['html']
+      'from':     '{0} <{1}>'.format(data['from_name'], data['from']),
+      'to':       '{0} <{1}>'.format(data['to_name'],   data['to']),
+      'subject':  data['subject'],
+      'text':     data['text'],
+      'html':     data['html']
     })
 
 

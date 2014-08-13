@@ -18,19 +18,19 @@ class Mandrill():
 
   def __get_json_object(self, data):
     return json.dumps({
-      "key": self.key,
-      "message": {
-        "from_email": data['from'],
-        "from_name":  data['from_name'],
-        "to": [{
-          "email": data['to'],
-          "name":  data['to_name'],
-          "type":  "to"
+      'key': self.key,
+      'message': {
+        'from_email': data['from'],
+        'from_name':  data['from_name'],
+        'to': [{
+          'email': data['to'],
+          'name':  data['to_name'],
+          'type':  'to'
         }],
-        "subject":  data['subject'],
-        "html":     data['html'],
-        "text":     data['text'],
-        "attachments": [{}]
+        'subject':  data['subject'],
+        'html':     data['html'],
+        'text':     data['text'],
+        'attachments': [{}]
       }
     })
 
