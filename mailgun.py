@@ -1,7 +1,6 @@
-from api_keys import APIKeys
 import urllib2, urllib, json, logging
-from urllib2 import HTTPError
-from logging.handlers import RotatingFileHandler
+from urllib2  import HTTPError
+from api_keys import APIKeys
 
 class Mailgun():
   """
@@ -17,7 +16,10 @@ class Mailgun():
     'message': 'Email queued to be sent by Mailgun.'
   }
 
-  def __get_json_object(self, data):
+  def __get_encoded_object(self, data):
+    """
+    Build a url-encoded object to be sent to Mailgun.
+    """
     return urllib.urlencode({
       'from':     '{0} <{1}>'.format(data['from_name'], data['from']),
       'to':       '{0} <{1}>'.format(data['to_name'],   data['to']),
@@ -49,7 +51,7 @@ class Mailgun():
     First authenticate to Mailgun, then build the request object and send it
     """
     self.authenticate()
-    data    = self.__get_json_object(data)
+    data    = self.__get_encoded_object(data)
     request = urllib2.Request(self.url, data)
     try:
       handler = urllib2.urlopen(request)

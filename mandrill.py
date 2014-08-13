@@ -1,6 +1,6 @@
-from api_keys import APIKeys
 import urllib2, urllib, json
-from urllib2 import HTTPError
+from urllib2  import HTTPError
+from api_keys import APIKeys
 
 class Mandrill():
   """
@@ -17,6 +17,9 @@ class Mandrill():
   }
 
   def __get_json_object(self, data):
+    """
+    Build a json-encoded object to be sent to Mandrill.
+    """
     return json.dumps({
       'key': self.key,
       'message': {
