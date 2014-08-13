@@ -5,4 +5,5 @@ Werkzeug==0.9.6
 gunicorn==19.1.0
 html2text==2014.7.3
 itsdangerous==0.24
+voluptuous==0.8.5
 wsgiref==0.1.2
