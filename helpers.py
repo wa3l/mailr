@@ -6,7 +6,7 @@ Helper functions used in the app.
 """
 
 def json_data(req):
-  data = json.loads(req.get_json(force=True))
+  data = json.loads(req.get_json())
   return {k: v.strip() for k, v in data.iteritems()}
 
 

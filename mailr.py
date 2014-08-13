@@ -8,14 +8,15 @@ app.config['DEBUG']        = True
 app.config['def_provider'] = 'Mailgun'
 app.config['sec_provider'] = 'Mandrill'
 
+
 @app.route('/email', methods=['POST'])
 def email():
   # build email dict:
   data = helpers.json_data(request)
-
   # validate data against schema
   valid, msg = Validator().validate(data)
-  if not valid: return helpers.bad_response(msg)
+  if not valid:
+    return helpers.bad_response(msg)
 
   # process body and send email
   data       = helpers.convert_body(data)

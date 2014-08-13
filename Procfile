@@ -1,1 +1,1 @@
-web: gunicorn uber:app --log-file=-
+web: gunicorn mailr:app --log-file=-
