@@ -17,13 +17,13 @@ class Mailgun():
     'message': 'Email queued to be sent by Mailgun.'
   }
 
-  def __get_json_object(self, email):
+  def __get_json_object(self, data):
     return urllib.urlencode({
-      "from":     "{0} <{1}>".format(email['from_name'], email['from']),
-      "to":       "{0} <{1}>".format(email['to_name'],   email['to']),
-      "subject":  email['subject'],
-      "text":     email['text'],
-      "html":     email['html']
+      "from":     "{0} <{1}>".format(data['from_name'], data['from']),
+      "to":       "{0} <{1}>".format(data['to_name'],   data['to']),
+      "subject":  data['subject'],
+      "text":     data['text'],
+      "html":     data['html']
     })
 
 
@@ -43,13 +43,13 @@ class Mailgun():
 
 
 
-  def send(self, email):
+  def send(self, data):
     """
     Send the email using the provided email dict.
     First authenticate to Mailgun, then build the request object and send it
     """
     self.authenticate()
-    data = self.__get_json_object(email)
+    data    = self.__get_json_object(data)
     request = urllib2.Request(self.url, data)
     try:
       handler = urllib2.urlopen(request)

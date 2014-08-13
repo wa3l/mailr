@@ -30,12 +30,12 @@ class Validator():
       raise Invalid("Invalid email address.")
 
 
-  def validate(self, email):
+  def validate(self, data):
     """
     Perform validation against the validation schema.
     """
     try:
-      self.schema(email)
+      self.schema(data)
     except MultipleInvalid as e:
-      return {'status': 'error', 'message': str(e)}
-    return True
+      return (False, str(e))
+    return (True, 'All data is valid.')
