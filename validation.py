@@ -1,5 +1,5 @@
 import re
-from voluptuous import Schema, Required, All, Length, MultipleInvalid, Invalid
+from voluptuous import Schema, Optional, All, Length, MultipleInvalid, Invalid
 
 class Validator():
   """
@@ -16,8 +16,19 @@ class Validator():
         'to_name':   All(unicode, Length(min=1)),
         'from_name': All(unicode, Length(min=1)),
         'subject':   All(unicode, Length(min=1, max=78)),
-        'body':      All(unicode, Length(min=1))
+        'body':      All(unicode, Length(min=1)),
+        Optional('provider'): All(self.validate_provider)
     }, extra=True, required=True)
+
+
+  def validate_provider(self, provider):
+    """
+    Validate an email provider (either Mailgun or Mandrill).
+    """
+    if provider.lower() in ['mandrill', 'mailgun']:
+      return provider
+    else:
+      raise Invalid("Invalid email provider.")
 
 
   def validate_email(self, email_address):

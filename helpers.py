@@ -38,9 +38,28 @@ def bad_response(message, code=400):
   resp.status_code = code
   return resp
 
+
 def log_error(logger, provider, message, code):
   """
   Log an error: mention the mail provider name
   and the response message and code.
   """
   logger.error('Error {0} - {1} responded with: {2}'.format(code, provider, message))
+
+
+def send_email(data, provider):
+  if data.has_key('body'): data = convert_body(data)
+  service    = email_service(provider)
+  resp, code = service.send(data)
+  return (resp, code)
+
+
+def choose_provider(data, config):
+  if data.has_key('provider'):
+    config['default'] = data['provider'].capitalize()
+    # set secondary provider
+    if config['default'].lower() == 'mailgun':
+      config['backup'] = 'Mandrill'
+    else:
+      config['backup'] = 'Mailgun'
+  return config['default']
