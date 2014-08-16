@@ -11,8 +11,8 @@ class Validator():
     Define the validation schema
     """
     self.schema = Schema({
-        'to':        All(self.validate_email, Length(min=6, max=254)),
-        'from':      All(self.validate_email, Length(min=6, max=254)),
+        'to':        All(self.validate_email, Length(min=3, max=254)),
+        'from':      All(self.validate_email, Length(min=3, max=254)),
         'to_name':   All(unicode, Length(min=1)),
         'from_name': All(unicode, Length(min=1)),
         'subject':   All(unicode, Length(min=1, max=78)),
