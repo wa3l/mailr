@@ -1,7 +1,6 @@
 import urllib2, urllib, datetime
 from urllib2  import HTTPError
 from flask    import json
-from api_keys import APIKeys
 
 class Mandrill():
   """
@@ -10,8 +9,8 @@ class Mandrill():
   Automatically handles creating a request to the Mandrill service
   provided a email object that contains email data.
   """
-  key = APIKeys.MANDRILL_KEY
-  url = APIKeys.MANDRILL_URL
+  key = os.environ['MANDRILL_KEY']
+  url = os.environ['MANDRILL_URL']
   success = {
     'status':  'success',
     'message': 'Email queued to be sent by Mandrill.'

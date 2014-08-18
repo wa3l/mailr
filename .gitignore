@@ -1,8 +1,10 @@
 # ignore venv
 venv
 
+# ignore .env where API keys are stored
+.env
+
 # ignore config file with api keys
-api_keys.py
 test.py
 
 # Byte-compiled / optimized / DLL files

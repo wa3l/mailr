@@ -9,7 +9,6 @@ app.config['DEBUG']   = True
 app.config['default'] = 'Mailgun'
 app.config['backup']  = 'Mandrill'
 
-
 @app.route('/email', methods=['POST'])
 def email():
   # build email dict:

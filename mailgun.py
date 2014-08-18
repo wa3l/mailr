@@ -1,8 +1,6 @@
-import urllib2, urllib, logging
+import os, urllib2, urllib, logging, time
 from flask    import json
 from urllib2  import HTTPError
-from api_keys import APIKeys
-import time
 
 class Mailgun():
   """
@@ -11,8 +9,8 @@ class Mailgun():
   Automatically handles creating a request to the Mailgun service
   provided a email object that contains email data.
   """
-  key = APIKeys.MAILGUN_KEY
-  url = APIKeys.MAILGUN_URL
+  key = os.environ['MAILGUN_KEY']
+  url = os.environ['MAILGUN_URL']
   success = {
     'status':  'success',
     'message': 'Email queued to be sent by Mailgun.'
