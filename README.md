@@ -57,7 +57,7 @@ To run the app, you have two options.
     Now you can do `foreman start`
 To start the app at `http://localhost:5000`. 
 
-Once you get the app running, you can use send POST requests to `http://localhost:5000/email`.
+Once you get the app running, you can start sending POST requests to `http://localhost:5000/email`.
 
 ###Notes:
 1. You need to set your content-type to `application/json`, and don't forget to escape your double quotes in the JSON string.
