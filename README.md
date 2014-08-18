@@ -34,7 +34,11 @@ An example successful response is:
 ```
 
 ## Installation
+First, you need to clone the repo:
 
+```
+git clone git@github.com:wa3l/mailr.git
+```
 
 ## API Keys
 API keys are not kept in the git repository for obvious reasons. To set your own API keys, simply create a `.env` file in the main directory using the following format:
@@ -50,6 +54,9 @@ Foreman will make sure to load those environment variables when you startup the 
 ```
 heroku config:set MAILGUN_KEY=mailgun_api_key
 ```
+Alternatively, you can add a variable to your `~/.bashrc` (or whatever file you use) by doing: 
+
+```export MAILGUN_KEY=your_mailgun_api_key```
 
 ## Input validation
 The required fields are: `to`, `to_name`, `from`, `from_name`, `subject` and `body`.
