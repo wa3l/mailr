@@ -1,4 +1,4 @@
-import urllib2, urllib
+import urllib2, urllib, datetime
 from urllib2  import HTTPError
 from flask    import json
 from api_keys import APIKeys
@@ -21,7 +21,7 @@ class Mandrill():
     """
     Build a json-encoded object to be sent to Mandrill.
     """
-    return json.dumps({
+    email = {
       'key': self.key,
       'message': {
         'from_email': data['from'],
@@ -36,7 +36,16 @@ class Mandrill():
         'text':     data['text'],
         'attachments': [{}]
       }
-    })
+    }
+    if data.has_key('deliverytime'):
+      # construct time in YYYY-MM-DD HH:MM:SS format.
+      # Note: no need to worry about float() throwing
+      # an exception, validation has already done that.
+      timestamp        = float(data['deliverytime'])
+      utc_datetime     = datetime.datetime.utcfromtimestamp(timestamp)
+      email['send_at'] = utc_datetime.strftime('%Y-%m-%d %H:%M:%S')
+
+    return json.dumps(email)
 
 
   def send(self, data):

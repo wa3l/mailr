@@ -2,6 +2,7 @@ import urllib2, urllib, logging
 from flask    import json
 from urllib2  import HTTPError
 from api_keys import APIKeys
+import time
 
 class Mailgun():
   """
@@ -21,13 +22,17 @@ class Mailgun():
     """
     Build a url-encoded object to be sent to Mailgun.
     """
-    return urllib.urlencode({
+    email = {
       'from':     '{0} <{1}>'.format(data['from_name'], data['from']),
       'to':       '{0} <{1}>'.format(data['to_name'],   data['to']),
       'subject':  data['subject'],
       'text':     data['text'],
       'html':     data['html']
-    })
+    }
+    if data.has_key('deliverytime'):
+      email['o:deliverytime'] = data['deliverytime']
+
+    return urllib.urlencode(email)
 
 
   def authenticate(self):
