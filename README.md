@@ -1,7 +1,7 @@
 # Mailr is an app that wraps the Mailgun and Mandrill email services.
-Mailr is a simple Python app written with Flask. It wraps [Mailgun](http://mailgun.com) and [Mandrill](http://mandrillapp.com), both email services that provide a RESTful API for sending/receiving emails. 
+Mailr is a simple Python app written with Flask. It wraps [Mailgun](http://mailgun.com) and [Mandrill](http://mandrillapp.com), both email services that provide a RESTful API for sending/receiving emails. Flask is enough for the purposes of the project since it provides good routing other nifty features without adding much bloat to the application.
       
-Mailr accepts a POST request with a JSON object at an `/email` endpoint. The request should have the parameters below:
+Mailr accepts POST requests with a JSON object at an `/email` endpoint. The request should have the parameters below:
 
 ```
 - to: the email address to send to.
@@ -10,7 +10,6 @@ Mailr accepts a POST request with a JSON object at an `/email` endpoint. The req
 - from_name: the name to accompany the email.
 - subject: the subject line.
 - body: the HTML body of the email.
-- provider: the name of an email provider.
 ```
 An example request payload:
 
@@ -20,8 +19,7 @@ An example request payload:
 "to_name": "Batman",“from”: “alfred@waynemansion.com”, 
 "from_name": "Alfred",
 "subject": "Robin emergency.",
-"body": "<h1>Master Wayne,</h1><p>The Joker broke Robin's nose, again.</p>",
-"provider": "mailgun"}
+"body": "<h1>Master Wayne,</h1><p>The Joker broke Robin's nose, again.</p>"}
 ```
 
 An example successful response is:
@@ -36,15 +34,9 @@ An example successful response is:
 ##Installation
 1. First, clone the repo: `git clone git@github.com:wa3l/mailr.git`
 
-2. If you use [virtualenv](http://virtualenv.readthedocs.org/en/latest/), which it's recommended that you do, then go ahead and create a new environment and activate it:
+2. If you use [virtualenv](http://virtualenv.readthedocs.org/en/latest/), which it's recommended that you do, then go ahead and create a new environment `virtualenv vent` and activate it `source venv/bin/activate`. This will create a `venv` directory which contains a local environment with all the libraries that you need, as well as `pip` and a Python interpreter. The `venv` directory is included in `.gitignore`.
 
-```
-> virtualenv venv
-> source venv/bin/activate
-```
-This will create a `venv` directory which contains a local environment with all the libraries that you need, as well as `pip` and a Python interpreter. The `venv` directory is included in `.gitignore`.
-
-Now do: `pip install -r requirements.txt` to install all the required libraries listed in `requirements.txt`. 
+3. Now do `pip install -r requirements.txt` to install all the required libraries listed in `requirements.txt`. 
 
 ##Running 
 
@@ -61,7 +53,7 @@ Once you get the app running, you can start sending POST requests to `http://loc
 
 ###Notes:
 1. You need to set your content-type to `application/json`, and don't forget to escape your double quotes in the JSON string.
-2. You will need to to quite foreman (`ctrl-C`) and do `foreman start` every time you make modifications to the code. Alternatively, you can get the best of both worlds by doing `foreman run python mailr.py`, which allows foreman to reload the code every time you make a change.
+2. You will need to quite foreman (`ctrl-C`) and do `foreman start` every time you make modifications to the code. Alternatively, you can get the best of both worlds by doing `foreman run python mailr.py`, which allows foreman to reload the code every time you make a change.
 
 
 ## API Keys
@@ -78,9 +70,11 @@ foreman will make sure to load those environment variables when you startup the 
 ```
 heroku config:set MAILGUN_KEY=mailgun_api_key
 ```
-Alternatively, you can add a variable to your `~/.bashrc` (or whatever file you use) like this: 
+If you don't use foreman, then you can add your Mailgun API key, for instance, by adding this line to your `~/.bashrc`(or whatever file you use): 
 
-```export MAILGUN_KEY=your_mailgun_api_key```
+```
+export MAILGUN_KEY=your_mailgun_api_key
+```
 
 ## Input validation
 The required fields are: `to`, `to_name`, `from`, `from_name`, `subject` and `body`.
@@ -88,7 +82,7 @@ The `provider` field is optional and only accepts the value `mailgun` or `mandri
 
 Similarly, the `deliverytime` field is also optional and accepts valid Unix timestamps between 0 and three days in the future. The three-day rule is requirement by Mailgun, so I opted to make it a requirement for both for simplicity. Additionally, Mandrill accepts a UTC timestamp in the `YYYY-MM-DD HH:MM:SS` format, but I chose to accept only Epoch timestamps to make the API uniform. Another solution would be to accept multiple date formats and convert them accordingly depending on the service used. This, however, makes validation more painful to manage. Please **note** that Mandrill does [not](http://help.mandrill.com/entries/24331201-Can-I-schedule-a-message-to-send-at-a-specific-time-) offer free delayed delivery emails, so you need to have a positive balance for this to work on Mandrill.
 
-The `to` and `from` fields have to be valid email addresses. This is determined by scanning the given string against the following regex `"[\w\.\-]*@[\w\.\-\+]*\.\w+"`. Admittedly, this can be improved, but I chose to keep it simple for the purposes of this app. Regular expressions made for  email addresses can get pretty [nasty](http://www.ex-parrot.com/pdw/Mail-RFC822-Address.html). There are, however, limits on the minimum and maximum lengths of email addresses. In this app, I use 3 and [254](http://www.rfc-editor.org/errata_search.php?rfc=3696&eid=1690)].
+The `to` and `from` fields have to be valid email addresses. This is determined by scanning the given string against the following regex `"[\w\.\-]*@[\w\.\-\+]*\.\w+"`. Admittedly, this can be improved, but I chose to keep it simple for the purposes of this app. Regular expressions made for  email addresses can get pretty [nasty](http://www.ex-parrot.com/pdw/Mail-RFC822-Address.html). There are, however, limits on the minimum and maximum lengths of email addresses. I use 3 and [254](http://www.rfc-editor.org/errata_search.php?rfc=3696&eid=1690), respectively.
 
 The subject line and body fields are required, and thus have a minimum length of 1 character. The subject line's maximum length is [78](http://www.faqs.org/rfcs/rfc2822.html). The body field has no upper limit on its size and is not checked for correct HTML syntax. 
 
