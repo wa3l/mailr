@@ -1,5 +1,4 @@
-import os, urllib2, urllib, datetime, time
-from flask import json
+import os, urllib2, datetime, time, flask
 
 class Mandrill():
   """
@@ -43,7 +42,7 @@ class Mandrill():
       utc_datetime     = datetime.datetime.utcfromtimestamp(timestamp)
       data['send_at']  = utc_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
-    return json.dumps(data)
+    return flask.json.dumps(data)
 
 
   def send(self, email):

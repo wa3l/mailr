@@ -1,5 +1,4 @@
 from flask import jsonify, json
-import email_model
 
 """
 Helper functions used in the app.

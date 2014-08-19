@@ -1,5 +1,4 @@
 import os, urllib2, urllib, time
-from flask import json
 
 class Mailgun():
   """

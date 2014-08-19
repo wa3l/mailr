@@ -1,7 +1,7 @@
 import os, flask
 from helpers import *
 from validation import Validator
-from email_model import *
+from email_model import db, Email
 from flask.ext.httpauth import HTTPBasicAuth
 from sqlalchemy.exc import DatabaseError
 
