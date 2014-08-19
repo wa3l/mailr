@@ -1,3 +1,4 @@
+import sys
 import re, time
 from voluptuous import Schema, Optional, All, Length, MultipleInvalid, Invalid
 
@@ -13,13 +14,29 @@ class Validator():
     self.schema = Schema({
         'to':        All(self.validate_email, Length(min=3, max=254)),
         'from':      All(self.validate_email, Length(min=3, max=254)),
+        'body':      All(self.validate_body, Length(min=1)),
         'to_name':   All(unicode, Length(min=1, max=256)),
         'from_name': All(unicode, Length(min=1, max=256)),
         'subject':   All(unicode, Length(min=1, max=78)),
-        'body':      All(unicode, Length(min=1)),
         Optional('service'):     All(self.validate_service),
         Optional('deliverytime'): All(self.validate_time)
     }, extra=True, required=True)
+
+
+  def validate_body(self, body):
+    """
+    Validate the body to be a unicode string
+    that is <= 25MB in size (required by Mailgun).
+    """
+    if not isinstance(body, unicode):
+      raise Invalid("Invalid body data type")
+
+    size = sys.getsizeof(body)
+    if size > 25 * 10**6:
+      raise Invalid("Body is larger than 25MB")
+
+    return body
+
 
 
   def validate_time(self, deliverytime):

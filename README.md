@@ -127,7 +127,7 @@ You need to access `/emails/page_number` to access the emails that pass through 
 
 ## Things to do/improve
 1. Test coverage. [Flask-Testing](https://pythonhosted.org/Flask-Testing/) looks like it would solve a lot of the limitations of testing under Flask.
-2. Checking for the size of the body. Mailgun supports [maximum](http://documentation.mailgun.com/user_manual.html#sending-via-api) messages size of 25MB.
+2. ~~Check for the size of the body. Mailgun supports a [maximum](http://documentation.mailgun.com/user_manual.html#sending-via-api) message size of 25MB~~ Done.
 3. Perhaps use [Requests](http://docs.python-requests.org/en/latest/) to clean up the HTTP requests code.
 4.
 
