@@ -1,7 +1,7 @@
 import os, flask
 from helpers import *
 from validation import Validator
-from email_model import db
+from email_model import *
 from flask.ext.sqlalchemy import SQLAlchemy
 from logging.handlers import RotatingFileHandler
 from flask.ext.httpauth import HTTPBasicAuth
@@ -24,27 +24,23 @@ the email and stores its details in the database.
 """
 @app.route('/email', methods=['POST'])
 def email():
-  # build email dict:
-  data = json_data(flask.request)
-
-  # validate data against schema
+  data       = json_data(flask.request)
   valid, msg = Validator().validate(data)
   if not valid: return abort(msg)
 
-  code   = 0
+  email  = Email(data)
   backup = app.config['backup']
-
-  # try the request, and retry upon failure.
+  code   = 0
   while code is not 200:
-    resp, code = send_email(data, app.config)
+    resp, code = send_email(email, app)
     if code is 200: break
-    log_error(app.logger, data, resp, code)
-    if data['provider'] is backup:
+    log_error(app.logger, email, resp, code)
+    if email.provider is backup:
       return abort('An error has occurred.', code)
-    data['provider'] = backup
+    email.provider = backup
 
   # everything OK.
-  store_email(db, data)
+  store_email(db, email)
   return flask.jsonify(resp)
 
 

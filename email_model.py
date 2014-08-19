@@ -1,4 +1,5 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+import html2text as convert
 import time
 
 db = SQLAlchemy()
@@ -26,9 +27,9 @@ class Email(db.Model):
     self.from_email = data['from']
     self.from_name  = data['from_name']
     self.subject    = data['subject']
-    self.html       = data['html']
-    self.text       = data['text']
-    self.provider   = data['provider']
+    self.html       = data['body']
+    self.text       = convert.html2text(data['body'])
+    self.provider   = data['provider'] if data.has_key('provider') else None
     if data.has_key('deliverytime'):
       self.deliverytime = int(data['deliverytime'])
     else:

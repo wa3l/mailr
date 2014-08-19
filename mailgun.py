@@ -15,21 +15,21 @@ class Mailgun():
     'message': 'Email queued to be sent by Mailgun.'
   }
 
-  def __get_encoded_object(self, data):
+  def __get_encoded_object(self, email):
     """
     Build a url-encoded object to be sent to Mailgun.
     """
-    email = {
-      'from':     '{0} <{1}>'.format(data['from_name'], data['from']),
-      'to':       '{0} <{1}>'.format(data['to_name'],   data['to']),
-      'subject':  data['subject'],
-      'text':     data['text'],
-      'html':     data['html']
+    data = {
+      'from':     '{0} <{1}>'.format(email.from_name, email.from_email),
+      'to':       '{0} <{1}>'.format(email.to_name,   email.to_email),
+      'subject':  email.subject,
+      'text':     email.text,
+      'html':     email.html
     }
-    if data.has_key('deliverytime'):
-      email['o:deliverytime'] = data['deliverytime']
+    if email.deliverytime > time.time():
+      data['o:deliverytime'] = email.deliverytime
 
-    return urllib.urlencode(email)
+    return urllib.urlencode(data)
 
 
   def authenticate(self):
@@ -48,13 +48,13 @@ class Mailgun():
 
 
 
-  def send(self, data):
+  def send(self, email):
     """
     Send the email using the provided email dict.
     First authenticate to Mailgun, then build the request object and send it
     """
     self.authenticate()
-    data    = self.__get_encoded_object(data)
+    data    = self.__get_encoded_object(email)
     request = urllib2.Request(self.url, data)
     try:
       handler = urllib2.urlopen(request)

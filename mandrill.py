@@ -1,4 +1,4 @@
-import os, urllib2, urllib, datetime
+import os, urllib2, urllib, datetime, time
 from flask import json
 
 class Mandrill():
@@ -15,42 +15,42 @@ class Mandrill():
     'message': 'Email queued to be sent by Mandrill.'
   }
 
-  def __get_json_object(self, data):
+  def __get_json_object(self, email):
     """
     Build a json-encoded object to be sent to Mandrill.
     """
-    email = {
+    data = {
       'key': self.key,
       'message': {
-        'from_email': data['from'],
-        'from_name':  data['from_name'],
+        'from_email': email.from_email,
+        'from_name':  email.from_name,
         'to': [{
-          'email': data['to'],
-          'name':  data['to_name'],
+          'email': email.to_email,
+          'name':  email.to_name,
           'type':  'to'
         }],
-        'subject':  data['subject'],
-        'html':     data['html'],
-        'text':     data['text'],
+        'subject':  email.subject,
+        'html':     email.html,
+        'text':     email.text,
         'attachments': [{}]
       }
     }
-    if data.has_key('deliverytime'):
+    if email.deliverytime > time.time():
       # construct time in YYYY-MM-DD HH:MM:SS format.
       # Note: no need to worry about float() throwing
       # an exception, validation has already done that.
-      timestamp        = float(data['deliverytime'])
+      timestamp        = float(email.deliverytime)
       utc_datetime     = datetime.datetime.utcfromtimestamp(timestamp)
-      email['send_at'] = utc_datetime.strftime('%Y-%m-%d %H:%M:%S')
+      data['send_at']  = utc_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
-    return json.dumps(email)
+    return json.dumps(data)
 
 
-  def send(self, data):
+  def send(self, email):
     """
     Send the email using the provided email dict.
     """
-    data    = self.__get_json_object(data)
+    data    = self.__get_json_object(email)
     header  = {'Content-Type': 'application/json'}
     request = urllib2.Request(self.url, data, headers=header)
     # Note: Mandrill appears to be responding with 500 error code for any error.
