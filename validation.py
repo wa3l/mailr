@@ -13,8 +13,8 @@ class Validator():
     self.schema = Schema({
         'to':        All(self.validate_email, Length(min=3, max=254)),
         'from':      All(self.validate_email, Length(min=3, max=254)),
-        'to_name':   All(unicode, Length(min=1)),
-        'from_name': All(unicode, Length(min=1)),
+        'to_name':   All(unicode, Length(min=1, max=256)),
+        'from_name': All(unicode, Length(min=1, max=256)),
         'subject':   All(unicode, Length(min=1, max=78)),
         'body':      All(unicode, Length(min=1)),
         Optional('provider'):     All(self.validate_provider),

@@ -47,14 +47,15 @@ def log_error(logger, provider, message, code):
   logger.error('Error {0} - {1} responded with: {2}'.format(code, provider, message))
 
 
-def send_email(data, provider):
-  if data.has_key('body'): data = convert_body(data)
-  service    = email_service(provider)
+def send_email(data):
+  if data.has_key('body'):
+    data = convert_body(data)
+  service    = email_service(data['provider'])
   resp, code = service.send(data)
   return (resp, code)
 
 
-def choose_provider(data, config):
+def set_provider(data, config):
   if data.has_key('provider'):
     config['default'] = data['provider'].capitalize()
     # set secondary provider
@@ -62,4 +63,5 @@ def choose_provider(data, config):
       config['backup'] = 'Mandrill'
     else:
       config['backup'] = 'Mailgun'
+  data['provider'] = config['default']
   return config['default']
