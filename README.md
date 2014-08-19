@@ -128,8 +128,7 @@ You need to access `/emails/page_number` to access the emails that pass through 
 ## Things to do/improve
 1. Test coverage. [Flask-Testing](https://pythonhosted.org/Flask-Testing/) looks like it would solve a lot of the limitations of testing under Flask.
 2. ~~Check for the size of the body. Mailgun supports a [maximum](http://documentation.mailgun.com/user_manual.html#sending-via-api) message size of 25MB~~ Done.
-3. Perhaps use [Requests](http://docs.python-requests.org/en/latest/) to clean up the HTTP requests code.
-4.
+3. ~~Perhaps use [Requests](http://docs.python-requests.org/en/latest/) to clean up the HTTP requests code.~~ Done. Working code that uses urllib2 can be seen in the commit history. Requests just simplifies the logic and makes code more readable.
 
 
 ## Author
