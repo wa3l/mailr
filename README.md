@@ -40,7 +40,14 @@ Additionally, the app has an `/emails` endpoint that accepts a `page` parameter 
 2. If you use [virtualenv](http://virtualenv.readthedocs.org/en/latest/), which it's recommended that you do, then go ahead and create a new environment `virtualenv venv` and activate it `source venv/bin/activate`. This will create a `venv` directory which contains a local environment with all the libraries that you need, as well as `pip` and a Python interpreter. The `venv` directory is included in `.gitignore`.
 
 3. Now do `pip install -r requirements.txt` to install all the required libraries listed in `requirements.txt`.
-4. You need PostgreSQL installed on your system. Refer to the official [website](http://www.postgresql.org) for instructions on how to install it. In my experience, [Postgres.app](http://postgresapp.com) is the most convenient way to install it on OS X. See the **Environment Variables** section for instructions on how to link a database to the code.
+4. You need PostgreSQL installed on your system. Refer to the official [website](http://www.postgresql.org) for instructions on how to install it. In my experience, [Postgres.app](http://postgresapp.com) is the most convenient way to install it on OS X. See the **Environment Variables** section for instructions on how to link a database to the code. In any case, you need to fire `python` up and do:
+
+```
+>>> from mailr import db
+>>> db.create_all()
+```
+This will create the database table for storing emails.
+
 
 ##Running
 
@@ -125,11 +132,11 @@ You need to access `/emails/page_number` to access the emails that pass through 
 }
 ```
 
-## Things to do/improve
-1. Test coverage. [Flask-Testing](https://pythonhosted.org/Flask-Testing/) looks like it would solve a lot of the limitations of testing under Flask.
+## TODO:
+1. Improve test coverage. [Flask-Testing](https://pythonhosted.org/Flask-Testing/) looks like it would solve a lot of the limitations of testing under Flask.
 2. ~~Check for the size of the body. Mailgun supports a [maximum](http://documentation.mailgun.com/user_manual.html#sending-via-api) message size of 25MB~~ Done.
 3. ~~Perhaps use [Requests](http://docs.python-requests.org/en/latest/) to clean up the HTTP requests code.~~ Done. Working code that uses urllib2 can be seen in the commit history. Requests just simplifies the logic and makes code more readable.
 
 
 ## Author
-Wael Al-Sallami | [about.me](http://about.me/wael).
+Wael Al-Sallami | [about.me/wael](http://about.me/wael).
