@@ -1,4 +1,4 @@
-import os, urllib2, urllib, time
+import os, time, requests
 
 class Mailgun():
   """
@@ -14,7 +14,7 @@ class Mailgun():
     'message': 'Email queued to be sent by Mailgun.'
   }
 
-  def __get_encoded_object(self, email):
+  def __get_data(self, email):
     """
     Build a url-encoded object to be sent to Mailgun.
     """
@@ -28,36 +28,14 @@ class Mailgun():
     if email.deliverytime > time.time():
       data['o:deliverytime'] = email.deliverytime
 
-    return urllib.urlencode(data)
-
-
-  def authenticate(self):
-    """
-    Authenticate to the Mailgun service using our API keys.
-    This is ugly code due to urllib's low levelness. It:
-      1. Creates a password manager and configures it.
-      2. Builds a Basic HTTP Auth handler.
-      3. Builds an opener and instalsl it.
-    """
-    password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
-    password_manager.add_password(None, self.url, 'api', self.key)
-    auth   = urllib2.HTTPBasicAuthHandler(password_manager)
-    opener = urllib2.build_opener(auth)
-    urllib2.install_opener(opener)
-
-
+    return data
 
   def send(self, email):
     """
-    Send the email using the provided email dict.
-    First authenticate to Mailgun, then build the request object and send it
+    Send the email using the provided Email object.
     """
-    self.authenticate()
-    data    = self.__get_encoded_object(email)
-    request = urllib2.Request(self.url, data)
-    try:
-      handler = urllib2.urlopen(request)
-    except urllib2.HTTPError as e:
-      return (e.reason, e.code)
-
-    return (self.success, handler.getcode())
+    resp = requests.post(
+        self.url,
+        auth=('api', self.key),
+        data=self.__get_data(email))
+    return (resp.text, resp.status_code)

@@ -37,14 +37,11 @@ def email():
     resp, code    = send_email(email)
     if code is 200:
       save_email(db, email)
-      return flask.jsonify(resp)
+      return success(email.service)
     else:
       log_error(app.logger, s, resp, code)
 
   return abort('An error has occurred.', code)
-
-
-
 
 
 """

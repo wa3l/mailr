@@ -21,6 +21,16 @@ def abort(message, code=400):
   resp.status_code = code
   return resp
 
+def success(service):
+  """(str) -> flask.Response
+  Produces a response object with a success message.
+  """
+  success = {
+    'status':  'success',
+    'message': 'Email queued to be sent by {}.'.format(service.capitalize())
+  }
+  return jsonify(success)
+
 
 def log_error(logger, service, message, code):
   """(logger, str, str, int) -> None
