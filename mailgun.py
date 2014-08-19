@@ -1,6 +1,5 @@
-import os, urllib2, urllib, logging, time
-from flask    import json
-from urllib2  import HTTPError
+import os, urllib2, urllib, time
+from flask import json
 
 class Mailgun():
   """
@@ -22,7 +21,7 @@ class Mailgun():
     """
     email = {
       'from':     '{0} <{1}>'.format(data['from_name'], data['from']),
-      'to':       '{0} <{1}>'.format(data['to_name'],   data['to']),
+      # 'to':       '{0} <{1}>'.format(data['to_name'],   data['to']),
       'subject':  data['subject'],
       'text':     data['text'],
       'html':     data['html']
@@ -59,7 +58,7 @@ class Mailgun():
     request = urllib2.Request(self.url, data)
     try:
       handler = urllib2.urlopen(request)
-    except HTTPError as e:
+    except urllib2.HTTPError as e:
       return (e.reason, e.code)
 
     return (self.success, handler.getcode())

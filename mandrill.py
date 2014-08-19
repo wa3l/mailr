@@ -1,6 +1,5 @@
-import urllib2, urllib, datetime
-from urllib2  import HTTPError
-from flask    import json
+import os, urllib2, urllib, datetime
+from flask import json
 
 class Mandrill():
   """
@@ -57,7 +56,7 @@ class Mandrill():
     # Note: Mandrill appears to be responding with 500 error code for any error.
     try:
       handler = urllib2.urlopen(request)
-    except HTTPError as e:
+    except urllib2.HTTPError as e:
       return (e.reason, e.code)
 
     return (self.success, handler.getcode())

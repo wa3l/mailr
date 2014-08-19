@@ -30,21 +30,23 @@ An example successful response is:
     "message": "Email queued to be sent by Mailgun."
 }
 ```
+Additionally, the app has an `/emails` endpoint that accepts a `page` parameter (as in `/emails/2` for instance). This endpoint requires Basic Auth with the username always being `api` and a password of your choosing. See the **Environment Variables** section for more on that.
 
 ##Installation
 1. First, clone the repo: `git clone git@github.com:wa3l/mailr.git`
 
-2. If you use [virtualenv](http://virtualenv.readthedocs.org/en/latest/), which it's recommended that you do, then go ahead and create a new environment `virtualenv vent` and activate it `source venv/bin/activate`. This will create a `venv` directory which contains a local environment with all the libraries that you need, as well as `pip` and a Python interpreter. The `venv` directory is included in `.gitignore`.
+2. If you use [virtualenv](http://virtualenv.readthedocs.org/en/latest/), which it's recommended that you do, then go ahead and create a new environment `virtualenv venv` and activate it `source venv/bin/activate`. This will create a `venv` directory which contains a local environment with all the libraries that you need, as well as `pip` and a Python interpreter. The `venv` directory is included in `.gitignore`.
 
 3. Now do `pip install -r requirements.txt` to install all the required libraries listed in `requirements.txt`. 
+4. You need PostgreSQL installed on your system. Refer to the official [website](http://www.postgresql.org) for instructions on how to install it. In my experience, [Postgres.app](http://postgresapp.com) is the most convenient way to install it on OS X. See the **Environment Variables** section for instructions on how to link a database to the code.
 
 ##Running 
 
 To run the app, you have two options. 
 
-1. By typing `python mailr.py`. **Note that you need to set your API keys in `.bashrc`**. See the **API Keys** section for more information.
+1. By typing `python mailr.py`. **Note that you need to set your API keys in `.bashrc`**. See the **Environment Variables** section for more information.
 
-2. By using [foreman](https://github.com/ddollar/foreman), a tool that lets you run multiple processes needed for your application using a `Procfile`. This is necessary for deploying the app on Heroku. In fact, foreman is installed by default when you install the [Heroku CLI tool](https://devcenter.heroku.com/categories/command-line), so this is a great way to have it installed. Once you have foreman installed, **you need to set up your API keys in a `.env` file**. See the **API Keys** section for more information. 
+2. By using [foreman](https://github.com/ddollar/foreman), a tool that lets you run multiple processes needed for your application using a `Procfile`. This is necessary for deploying the app on Heroku. In fact, foreman is installed by default when you install the [Heroku CLI tool](https://devcenter.heroku.com/categories/command-line), so this is a great way to have it installed. Once you have foreman installed, **you need to set up your API keys in a `.env` file**. See the **Environment Variables** section for more information. 
 
     Now you can do `foreman start`
 To start the app at `http://localhost:5000`. 
@@ -56,8 +58,8 @@ Once you get the app running, you can start sending POST requests to `http://loc
 2. You will need to quite foreman (`ctrl-C`) and do `foreman start` every time you make modifications to the code. Alternatively, you can get the best of both worlds by doing `foreman run python mailr.py`, which allows foreman to reload the code every time you make a change.
 
 
-## API Keys
-API keys are not kept in the git repository for obvious reasons. To set your own API keys, simply create a `.env` file in the main directory using the following format:
+## Environment Variables
+API keys are not kept in the git repository for obvious reasons. To set your own API keys, simply create a `.env` file in the main directory with the following content:
 
 ```
 MAILGUN_KEY  = your_mailgun_api_key
@@ -75,6 +77,9 @@ If you don't use foreman, then you can add your Mailgun API key, for instance, b
 ```
 export MAILGUN_KEY=your_mailgun_api_key
 ```
+Whichever way you endue using, you need to set all the API keys and URLs for both services. Additionally, you need to set the `DATABASE_URL` and `MAILR_KEY` variables. The first would probably be something like `postgresql://localhost/db_name` where `db_name` is a database you create for the app.
+
+The other variable, `MAILR_KEY`, is any password you choose to access the `/emails` endpoint.
 
 ## Input validation
 The required fields are: `to`, `to_name`, `from`, `from_name`, `subject` and `body`.
@@ -101,6 +106,29 @@ The app send an email with the provided HTML body. Additionally, it processes th
 ## Sending emails
 Mailgun is used as the default email service. Mandrill is used as backup. The decision is based on Mailgun's faster delivery, clearer documentation, and better error responses. Mandrill promises appropriate error codes/messages but have in my experience only responded with `500 Internal Error' headers for any kind of error.
 
-However, this behavior can be changed by modifying the app.config['default'] and app.config['backup'] configuration variables. Additionally, you can specify a provider in the JSON request using the `provider` field. Setting this field takes precedence over the default settings. 
+However, this behavior can be changed by modifying the `app.config['default']` and `app.config['backup']` configuration variables. Additionally, you can specify a provider in the JSON request using the `provider` field. Setting this field takes precedence over the default settings. 
 
 Finally, regardless of the method you use to specify the preferred email service, the app will automatically determine if your preferred service is having issues/timeouts and will try the secondary service to send the email.
+
+## Retrieving Emails
+You need to access `/emails/page_number` to access the emails that pass through the app. This endpoint requires Basic Auth with the username being `api` and the password set in `.env`. It returns a JSON object that looks like this:
+
+```
+{
+  "page": 1,
+  "emails": {
+    "1": "{'to': 'batman@waynemansion.com', 'to_name': 'Batman', 'from': 'alfred@waynemansion.com', 'from_name': 'Alfred', 'subject': 'Robin!', 'text': 'Robin is missing!', 'html': '<p>Robin is missing!</p>', 'provider': 'Mailgun', 'deliverytime': '1408424058'}", 
+    "2": "{'to': 'alfred@waynemansion.com', 'to_name': 'Alfred', 'from': 'batman@waynemansion.com', 'from_name': 'Batman', 'subject': 're:Robin!', 'text': 'Good.', 'html': '<p>Good.</p>', 'provider': 'Mailgun', 'deliverytime': '1408424058'}"
+  }
+}
+```
+
+## Things to do/improve
+1. Test coverage. [Flask-Testing](https://pythonhosted.org/Flask-Testing/) looks like it would solve a lot of the limitations of testing under Flask.
+2. Checking for the size of the body. Mailgun supports [maximum](http://documentation.mailgun.com/user_manual.html#sending-via-api) messages size of 25MB. 
+3. Perhaps use [Requests](http://docs.python-requests.org/en/latest/) to clean up the HTTP requests code. 
+4. 
+
+
+## Author
+Wael Al-Sallami | [about.me](http://about.me/wael).
