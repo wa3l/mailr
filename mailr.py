@@ -2,8 +2,6 @@ import os, flask
 from helpers import *
 from validation import Validator
 from email_model import *
-from flask.ext.sqlalchemy import SQLAlchemy
-from logging.handlers import RotatingFileHandler
 from flask.ext.httpauth import HTTPBasicAuth
 from sqlalchemy.exc import DatabaseError
 
@@ -13,8 +11,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db.app = app
 db.init_app(app)
 
-app.config['default'] = 'Mailgun'
-app.config['backup']  = 'Mandrill'
+app.config['default'] = 'mailgun'
+app.config['backup']  = 'mandrill'
 
 
 """

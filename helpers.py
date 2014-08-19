@@ -19,8 +19,8 @@ def email_service(service):
   """(str) -> Mailgun() or Mandrill()
   Returns a wrapper object of the default mail provider.
   """
-  module  = __import__(service.lower())
-  Service = getattr(module, service)
+  module  = __import__(service)
+  Service = getattr(module, service.capitalize())
   return Service()
 
 
@@ -61,11 +61,11 @@ def set_provider(email, config):
   are used.
   """
   if email.provider:
-    config['default'] = email.provider.capitalize()
-    if config['default'].lower() == 'mailgun':
-      config['backup'] = 'Mandrill'
+    config['default'] = email.provider.lower()
+    if config['default'] == 'mailgun':
+      config['backup'] = 'mandrill'
     else:
-      config['backup'] = 'Mailgun'
+      config['backup'] = 'mailgun'
   email.provider = config['default']
 
 
