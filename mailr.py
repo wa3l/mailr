@@ -29,22 +29,19 @@ def email():
 
   # validate data against schema
   valid, msg = Validator().validate(data)
-  if not valid:
-    return abort(msg)
+  if not valid: return abort(msg)
 
-  # send email
-  resp, code = send_email(data, app.config)
+  code   = 0
+  backup = app.config['backup']
 
-  # Retry with backup provider if there are errors
-  if code is not 200:
+  # try the request, and retry upon failure.
+  while code is not 200:
+    resp, code = send_email(data, app.config)
+    if code is 200: break
     log_error(app.logger, data, resp, code)
-    data['provider'] = app.config['backup']
-    resp, code       = send_email(data, app.config)
-
-  # Still no success?
-  if code is not 200:
-    log_error(app.logger, data, resp, code)
-    return abort('An error has occurred while sending the email.', code)
+    if data['provider'] is backup:
+      return abort('An error has occurred.', code)
+    data['provider'] = backup
 
   # everything OK.
   store_email(db, data)

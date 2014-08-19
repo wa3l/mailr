@@ -21,7 +21,7 @@ class Mailgun():
     """
     email = {
       'from':     '{0} <{1}>'.format(data['from_name'], data['from']),
-      # 'to':       '{0} <{1}>'.format(data['to_name'],   data['to']),
+      'to':       '{0} <{1}>'.format(data['to_name'],   data['to']),
       'subject':  data['subject'],
       'text':     data['text'],
       'html':     data['html']
