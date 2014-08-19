@@ -5,6 +5,7 @@ from email_model import Email, db
 from flask.ext.sqlalchemy import SQLAlchemy
 from logging.handlers import RotatingFileHandler
 from flask.ext.httpauth import HTTPBasicAuth
+from sqlalchemy.exc import DatabaseError
 
 app  = flask.Flask(__name__)
 
@@ -51,16 +52,15 @@ def email():
   return flask.jsonify(resp)
 
 
+@app.route('/emails/', defaults={'page': 1})
 @app.route('/emails/<int:page>', methods=['GET'])
 @auth.login_required
-def emails(page=1):
-  if page is 0:
-    return flask.redirect('/emails/1', code=302)
+def emails(page):
   email = Email.query.paginate(page, 20, False)
   resp   = {}
   for e in email.items:
     resp[e.id] = str(e)
-  return flask.jsonify(emails=resp)
+  return flask.jsonify(page=page, emails=resp)
 
 
 @auth.get_password
@@ -72,6 +72,10 @@ def get_password(username):
 @auth.error_handler
 def unauthorized():
   return bad_response('Unauthorized access.', 401)
+
+@app.errorhandler(DatabaseError)
+def special_exception_handler(error):
+  return bad_response('Database Error occurred.', 500)
 
 @app.errorhandler(404)
 def page_not_found(error):
