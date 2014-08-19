@@ -24,9 +24,10 @@ def convert_body(data):
   Moves the email body to data['html'], converts that to Markdown
   and stores it in data['key'], then deletes data['body']
   """
-  data['html'] = data['body']
-  data['text'] = convert.html2text(data['body'])
-  data.pop('body')
+  if data.has_key('body'):
+    data['html'] = data['body']
+    data['text'] = convert.html2text(data['body'])
+    data.pop('body')
   return data
 
 
@@ -48,8 +49,7 @@ def log_error(logger, provider, message, code):
 
 
 def send_email(data):
-  if data.has_key('body'):
-    data = convert_body(data)
+  data       = convert_body(data)
   service    = email_service(data['provider'])
   resp, code = service.send(data)
   return (resp, code)

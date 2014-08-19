@@ -20,16 +20,34 @@ class Email(db.Model):
   deliverytime = db.Column(db.BigInteger)
 
 
-  def __init__(self, email):
-    self.to_email   = email['to']
-    self.to_name    = email['to_name']
-    self.from_email = email['from']
-    self.from_name  = email['from_name']
-    self.subject    = email['subject']
-    self.html       = email['html']
-    self.text       = email['text']
-    self.provider   = email['provider']
-    if email.has_key('deliverytime'):
-      self.deliverytime = int(email['deliverytime'])
+  def __init__(self, data):
+    self.to_email   = data['to']
+    self.to_name    = data['to_name']
+    self.from_email = data['from']
+    self.from_name  = data['from_name']
+    self.subject    = data['subject']
+    self.html       = data['html']
+    self.text       = data['text']
+    self.provider   = data['provider']
+    if data.has_key('deliverytime'):
+      self.deliverytime = int(data['deliverytime'])
     else:
       self.deliverytime = int(time.time())
+
+
+  def __str__(self):
+    return str({
+      'to':           self.to_email,
+      'from':         self.from_email,
+      'to_name':      self.to_name,
+      'from_name':    self.from_name,
+      'subject':      self.subject,
+      'text':         self.text,
+      'html':         self.html,
+      'provider':     self.provider,
+      'deliverytime': str(self.deliverytime)
+    })
+
+
+  def __repr__(self):
+    return str(self)

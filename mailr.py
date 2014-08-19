@@ -1,16 +1,13 @@
-import os, logging
+import os, flask
 from helpers import *
 from validation import Validator
-from email_model import Email
-from email_model import db
-from flask   import Flask, request, jsonify, json
+from email_model import Email, db
 from flask.ext.sqlalchemy import SQLAlchemy
 from logging.handlers import RotatingFileHandler
+from flask.ext.httpauth import HTTPBasicAuth
 
+app  = flask.Flask(__name__)
 
-app = Flask(__name__)
-
-app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db.app = app
 db.init_app(app)
@@ -18,14 +15,13 @@ db.init_app(app)
 app.config['default'] = 'Mailgun'
 app.config['backup']  = 'Mandrill'
 
-@app.route('/')
-def home():
-  return 'ha?'
+auth = HTTPBasicAuth()
+
 
 @app.route('/email', methods=['POST'])
 def email():
   # build email dict:
-  data = json_data(request)
+  data = json_data(flask.request)
 
   # validate data against schema
   valid, msg = Validator().validate(data)
@@ -48,10 +44,40 @@ def email():
     msg = 'An error has occurred while sending the email.'
     return bad_response(msg, code)
 
+  e = Email(data)
+  db.session.add(e)
+  db.session.commit()
   # everything OK.
-  return jsonify(resp)
+  return flask.jsonify(resp)
+
+
+@app.route('/emails/<int:page>', methods=['GET'])
+@auth.login_required
+def emails(page=1):
+  if page is 0:
+    return flask.redirect('/emails/1', code=302)
+  email = Email.query.paginate(page, 20, False)
+  resp   = {}
+  for e in email.items:
+    resp[e.id] = str(e)
+  return flask.jsonify(emails=resp)
+
+
+@auth.get_password
+def get_password(username):
+  if username == 'api':
+    return os.environ['MAILR_API_KEY']
+  return None
+
+@auth.error_handler
+def unauthorized():
+  return bad_response('Unauthorized access.', 401)
+
+@app.errorhandler(404)
+def page_not_found(error):
+  return bad_response('The requested URL was not found on the server.', 404)
 
 
 if __name__ == '__main__':
-  app.run()
+  app.run(debug=True)
 
