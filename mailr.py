@@ -8,11 +8,12 @@ from sqlalchemy.exc import DatabaseError
 app  = flask.Flask(__name__)
 auth = HTTPBasicAuth()
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['services'] = ['mailgun', 'mandrill']
 db.app = app
 db.init_app(app)
 
-app.config['default'] = 'mailgun'
-app.config['backup']  = 'mandrill'
+services = app.config['services']
+
 
 
 """
@@ -26,20 +27,24 @@ def email():
   valid, msg = Validator().validate(data)
   if not valid: return abort(msg)
 
-  email  = Email(data)
-  backup = app.config['backup']
-  code   = 0
-  while code is not 200:
-    resp, code = send_email(email, app)
-    if code is 200: break
-    log_error(app.logger, email, resp, code)
-    if email.provider is backup:
-      return abort('An error has occurred.', code)
-    email.provider = backup
+  email = Email(data)
 
-  # everything OK.
-  store_email(db, email)
-  return flask.jsonify(resp)
+  if email.service == 'mandrill':
+    services.reverse()
+
+  for s in services:
+    email.service = s
+    resp, code    = send_email(email)
+    if code is 200:
+      save_email(db, email)
+      return flask.jsonify(resp)
+    else:
+      log_error(app.logger, s, resp, code)
+
+  return abort('An error has occurred.', code)
+
+
+
 
 
 """
@@ -52,9 +57,7 @@ page size is fixed to 20 results.
 @auth.login_required
 def emails(page):
   email = Email.query.paginate(page, 20, False)
-  resp   = {}
-  for e in email.items:
-    resp[e.id] = str(e)
+  resp  = {e.id: str(e) for e in email.items}
   return flask.jsonify(page=page, emails=resp)
 
 

@@ -1,5 +1,4 @@
 from flask import jsonify, json
-import html2text as convert
 import email_model
 
 """
@@ -15,15 +14,6 @@ def json_data(req):
   return {k: v.strip() for k, v in data.iteritems()}
 
 
-def email_service(service):
-  """(str) -> Mailgun() or Mandrill()
-  Returns a wrapper object of the default mail provider.
-  """
-  module  = __import__(service)
-  Service = getattr(module, service.capitalize())
-  return Service()
-
-
 def abort(message, code=400):
   """(str, int) -> flask.Response
   Produces a response object with the proper error code and message.
@@ -33,45 +23,37 @@ def abort(message, code=400):
   return resp
 
 
-def log_error(logger, email, message, code):
+def log_error(logger, service, message, code):
   """(logger, str, str, int) -> None
-  Logs an error: mention the mail provider
+  Logs an error: mention the mail service
   name, the response message and code.
   """
-  logger.error('Error {0} - {1} responded with: {2}'.format(code, email.provider, message))
+  logger.error('Error {0} - {1} responded with: {2}'.format(code, service, message))
 
 
-def send_email(email, app):
+def send_email(email):
   """(Email) -> (str, int)
   Processes the email body. Fires the correct email
   service and sends the email stored in data.
   Returns a response message and status code.
   """
-  set_provider(email, app.config)
-  service    = email_service(email.provider)
+  service    = email_service(email.service)
   resp, code = service.send(email)
   return (resp, code)
 
 
-def set_provider(email, config):
-  """(Email, dict) -> str
-  Sets the correct email provider service.
-  If user requested a specific provider then that
-  is set as the default, otherwise, the app defaults
-  are used.
+def email_service(service):
+  """(str) -> Mailgun() or Mandrill()
+  Returns a wrapper object of the default email service.
   """
-  if email.provider:
-    config['default'] = email.provider.lower()
-    if config['default'] == 'mailgun':
-      config['backup'] = 'mandrill'
-    else:
-      config['backup'] = 'mailgun'
-  email.provider = config['default']
+  module  = __import__(service)
+  Service = getattr(module, service.capitalize())
+  return Service()
 
 
-def store_email(db, email):
+def save_email(db, email):
   """(SQLAlchemy, Email) -> None
-  Stores the email object in the database.
+  Saves the email object in the database.
   """
   db.session.add(email)
   db.session.commit()

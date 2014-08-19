@@ -17,7 +17,7 @@ class Validator():
         'from_name': All(unicode, Length(min=1, max=256)),
         'subject':   All(unicode, Length(min=1, max=78)),
         'body':      All(unicode, Length(min=1)),
-        Optional('provider'):     All(self.validate_provider),
+        Optional('service'):     All(self.validate_service),
         Optional('deliverytime'): All(self.validate_time)
     }, extra=True, required=True)
 
@@ -40,14 +40,14 @@ class Validator():
     return t
 
 
-  def validate_provider(self, provider):
+  def validate_service(self, service):
     """
-    Validate an email provider (either Mailgun or Mandrill).
+    Validate an email service name (either mailgun or mandrill).
     """
-    if provider.lower() in ['mandrill', 'mailgun']:
-      return provider
+    if service.lower() in ['mandrill', 'mailgun']:
+      return service
     else:
-      raise Invalid("Invalid email provider")
+      raise Invalid("Invalid email service")
 
 
   def validate_email(self, email_address):

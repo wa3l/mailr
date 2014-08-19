@@ -17,7 +17,7 @@ class Email(db.Model):
   subject      = db.Column(db.String(78))
   html         = db.Column(db.UnicodeText)
   text         = db.Column(db.UnicodeText)
-  provider     = db.Column(db.String(10))
+  service      = db.Column(db.String(10))
   deliverytime = db.Column(db.BigInteger)
 
 
@@ -29,7 +29,7 @@ class Email(db.Model):
     self.subject    = data['subject']
     self.html       = data['body']
     self.text       = convert.html2text(data['body'])
-    self.provider   = data['provider'] if data.has_key('provider') else None
+    self.service    = data['service'] if data.has_key('service') else None
     if data.has_key('deliverytime'):
       self.deliverytime = int(data['deliverytime'])
     else:
@@ -45,7 +45,7 @@ class Email(db.Model):
       'subject':      self.subject,
       'text':         self.text,
       'html':         self.html,
-      'provider':     self.provider,
+      'service':     self.service,
       'deliverytime': str(self.deliverytime)
     })
 
