@@ -9,10 +9,17 @@ class Mailgun():
   """
   key = os.environ['MAILGUN_KEY']
   url = os.environ['MAILGUN_URL']
-  success = {
-    'status':  'success',
-    'message': 'Email queued to be sent by Mailgun.'
-  }
+
+  def send(self, email):
+    """
+    Send the email using the provided Email object.
+    """
+    resp = requests.post(
+        self.url,
+        auth=('api', self.key),
+        data=self.__get_data(email))
+    return resp
+
 
   def __get_data(self, email):
     """
@@ -27,15 +34,4 @@ class Mailgun():
     }
     if email.deliverytime > time.time():
       data['o:deliverytime'] = email.deliverytime
-
     return data
-
-  def send(self, email):
-    """
-    Send the email using the provided Email object.
-    """
-    resp = requests.post(
-        self.url,
-        auth=('api', self.key),
-        data=self.__get_data(email))
-    return (resp.text, resp.status_code)

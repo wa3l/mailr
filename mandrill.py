@@ -1,4 +1,4 @@
-import os, urllib2, datetime, time, flask
+import os, datetime, time, flask, requests
 
 class Mandrill():
   """
@@ -9,12 +9,19 @@ class Mandrill():
   """
   key = os.environ['MANDRILL_KEY']
   url = os.environ['MANDRILL_URL']
-  success = {
-    'status':  'success',
-    'message': 'Email queued to be sent by Mandrill.'
-  }
 
-  def __get_json_object(self, email):
+  def send(self, email):
+    """
+    Send the email using the provided Email object.
+    """
+    resp = requests.post(
+        self.url,
+        data=self.__get_data(email),
+        headers={'content-type': 'application/json'})
+    return resp
+
+
+  def __get_data(self, email):
     """
     Build a json-encoded object to be sent to Mandrill.
     """
@@ -43,19 +50,3 @@ class Mandrill():
       data['send_at']  = utc_datetime.strftime('%Y-%m-%d %H:%M:%S')
 
     return flask.json.dumps(data)
-
-
-  def send(self, email):
-    """
-    Send the email using the provided email dict.
-    """
-    data    = self.__get_json_object(email)
-    header  = {'Content-Type': 'application/json'}
-    request = urllib2.Request(self.url, data, headers=header)
-    # Note: Mandrill appears to be responding with 500 error code for any error.
-    try:
-      handler = urllib2.urlopen(request)
-    except urllib2.HTTPError as e:
-      return (e.reason, e.code)
-
-    return (self.success, handler.getcode())

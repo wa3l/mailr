@@ -13,6 +13,16 @@ def json_data(req):
   return {k: v.strip() for k, v in data.iteritems()}
 
 
+def get_services(email, app):
+  """(Email) -> list
+  Return a tuple containing email service names in order
+  """
+  services = app.config['services'][:]
+  if email.service == 'mandrill':
+    services.reverse()
+  return services
+
+
 def abort(message, code=400):
   """(str, int) -> flask.Response
   Produces a response object with the proper error code and message.
@@ -21,23 +31,23 @@ def abort(message, code=400):
   resp.status_code = code
   return resp
 
-def success(service):
-  """(str) -> flask.Response
+
+def success(email):
+  """(Email) -> flask.Response
   Produces a response object with a success message.
   """
-  success = {
+  return jsonify({
     'status':  'success',
-    'message': 'Email queued to be sent by {}.'.format(service.capitalize())
-  }
-  return jsonify(success)
+    'message': 'Email queued to be sent by {}.'.format(email.service.capitalize())
+  })
 
 
-def log_error(logger, service, message, code):
-  """(logger, str, str, int) -> None
+def log_error(logger, email, resp):
+  """(logger, Email, requests.Request) -> None
   Logs an error: mention the mail service
   name, the response message and code.
   """
-  logger.error('Error {0} - {1} responded with: {2}'.format(code, service, message))
+  logger.error('Error {0} - {1} responded with: {2}'.format(resp.status_code, email.service, resp.text))
 
 
 def send_email(email):
@@ -46,12 +56,11 @@ def send_email(email):
   service and sends the email stored in data.
   Returns a response message and status code.
   """
-  service    = email_service(email.service)
-  resp, code = service.send(email)
-  return (resp, code)
+  service = service_obj(email.service)
+  return service.send(email)
 
 
-def email_service(service):
+def service_obj(service):
   """(str) -> Mailgun() or Mandrill()
   Returns a wrapper object of the default email service.
   """

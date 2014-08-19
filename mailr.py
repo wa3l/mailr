@@ -12,9 +12,6 @@ app.config['services'] = ['mailgun', 'mandrill']
 db.app = app
 db.init_app(app)
 
-services = app.config['services']
-
-
 
 """
 This is the main point of interaction with the app.
@@ -29,19 +26,16 @@ def email():
 
   email = Email(data)
 
-  if email.service == 'mandrill':
-    services.reverse()
-
-  for s in services:
+  for s in get_services(email, app):
     email.service = s
-    resp, code    = send_email(email)
-    if code is 200:
+    resp = send_email(email)
+    if resp.status_code is 200:
       save_email(db, email)
-      return success(email.service)
+      return success(email)
     else:
-      log_error(app.logger, s, resp, code)
+      log_error(app.logger, email, resp)
 
-  return abort('An error has occurred.', code)
+  return abort('An error has occurred.', resp.status_code)
 
 
 """
