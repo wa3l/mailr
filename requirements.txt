@@ -1,6 +1,7 @@
 Flask==0.10.1
 Flask-HTTPAuth==2.2.1
 Flask-SQLAlchemy==1.0
+Flask-Testing==0.4.2
 Jinja2==2.7.3
 MarkupSafe==0.23
 SQLAlchemy==0.9.7
@@ -9,5 +10,6 @@ gunicorn==19.1.0
 html2text==2014.7.3
 itsdangerous==0.24
 psycopg2==2.5.3
+requests==2.3.0
 voluptuous==0.8.5
 wsgiref==0.1.2

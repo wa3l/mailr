@@ -9,8 +9,7 @@ def json_data(req):
   Returns a dict representing the json request
   submitted to /email.
   """
-  data = json.loads(req.get_json())
-  return {k: v.strip() for k, v in data.iteritems()}
+  return {k: v.strip() for k, v in req.get_json().iteritems()}
 
 
 def get_services(email, app):

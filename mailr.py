@@ -71,7 +71,12 @@ def special_exception_handler(error):
 def page_not_found(error):
   return abort('The requested URL was not found on the server.', 404)
 
+@app.errorhandler(400)
+def page_not_found(error):
+  return abort('Invalid JSON request.', 400)
+
 
 if __name__ == '__main__':
   app.run()
+  db.create_all()
 
