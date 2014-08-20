@@ -47,8 +47,8 @@ page size is fixed to 20 results.
 @app.route('/emails/<int:page>', methods=['GET'])
 @auth.login_required
 def emails(page):
-  email = Email.query.paginate(page, 20, False)
-  resp  = {e.id: str(e) for e in email.items}
+  emails = Email.query.paginate(page, 20, False)
+  resp   = {e.id: str(e) for e in emails.items}
   return flask.jsonify(page=page, emails=resp)
 
 
