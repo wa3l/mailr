@@ -7,11 +7,9 @@ from sqlalchemy.exc import DatabaseError
 
 app  = flask.Flask(__name__)
 auth = HTTPBasicAuth()
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-app.config['services'] = ['mailgun', 'mandrill']
+app.config.from_object('config.DevConfig')
 db.app = app
 db.init_app(app)
-
 
 """
 This is the main point of interaction with the app.
@@ -75,5 +73,5 @@ def page_not_found(error):
 
 
 if __name__ == '__main__':
-  app.run(debug=True)
+  app.run()
 

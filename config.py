@@ -16,8 +16,9 @@ class TestConfig(BaseConfig):
   SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
 
 class DevConfig(BaseConfig):
-  DEBUG = True
+  DEBUG                   = True
   SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+  SERVICES                = ['mailgun', 'mandrill']
 
 class ProdConfig(BaseConfig):
   SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']

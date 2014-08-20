@@ -17,7 +17,7 @@ def get_services(email, app):
   """(Email) -> list
   Return a tuple containing email service names in order
   """
-  services = app.config['services'][:]
+  services = app.config['SERVICES'][:]
   if email.service == 'mandrill':
     services.reverse()
   return services
