@@ -4,10 +4,12 @@ from validation import Validator
 from email_model import db, Email
 from flask.ext.httpauth import HTTPBasicAuth
 from sqlalchemy.exc import DatabaseError
+from os import environ
 
 app  = flask.Flask(__name__)
 auth = HTTPBasicAuth()
-app.config.from_object('config.DevConfig')
+env  = environ['MAILR_ENV'] if environ.has_key('MAILR_ENV') else 'Development'
+app.config.from_object('config.{}Config'.format(env))
 db.app = app
 db.init_app(app)
 
@@ -79,4 +81,3 @@ def page_not_found(error):
 if __name__ == '__main__':
   app.run()
   db.create_all()
-

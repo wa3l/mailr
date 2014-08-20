@@ -67,6 +67,7 @@ MANDRILL_KEY = your_mandrill_api_key
 MANDRILL_URL = your_mandrill_api_url
 DATABASE_URL = link_to_your_database
 MAILR_KEY    = api_key_used_for_/emails
+MAILR_ENV    = Development (set to "Production" on production server)
 ```
 foreman will make sure to load those environment variables when you startup the app without having to spam your `.bashrc`. This prevents the app from spamming your `.bashrc` and makes it easy to set those variables on multiple environments without conflicts. For instance, you can use the following command to set your Mailgun API key on Heroku:
 
